@@ -8,8 +8,8 @@ To edit and render locally:
 
 1. follow [the workbench installation instructions](https://carpentries.github.io/sandpaper-docs/index.html#setup)
 2. clone this repository
-3. open `R` or RStudio inside the cloned repo
-4. run `sandpaper::serve()`
-5. if your browser does not automatically open the rendered site, manually open the site located in `<repo_dir>/site/docs/index.html`
+3. from inside the cloned repo, run `R -e 'sandpaper::serve()'`
+4. point your browser to the outputted URI
+5. the output will automatically update as you edit markdown files
 
 [workbench]: https://carpentries.github.io/sandpaper-docs/
