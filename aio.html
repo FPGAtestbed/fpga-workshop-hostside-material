@@ -177,7 +177,31 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="01-introduction.html">1. Using RMarkdown</a>
+        <a href="01-accel-and-opencl.html">1. Introduction to Accelerators</a>
+    </div>
+<!--/div.accordion-header-->
+        
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush3">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading3">
+        <a href="02-opencl.html">2. OpenCL</a>
+    </div>
+<!--/div.accordion-header-->
+        
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush4">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading4">
+        <a href="03-data-transfer.html">3. Data Transfer</a>
     </div>
 <!--/div.accordion-header-->
         
@@ -239,9 +263,9 @@
     <main id="main-content" class="main-content"><div class="container lesson-content">
         
         
-<section id="aio-01-introduction"><p>Content from <a href="01-introduction.html">Using RMarkdown</a></p>
+<section id="aio-01-accel-and-opencl"><p>Content from <a href="01-accel-and-opencl.html">Introduction to Accelerators</a></p>
 <hr>
-<p> Last updated on 2022-09-13 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/01-introduction.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p> Last updated on 2022-09-17 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/01-accel-and-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -253,7 +277,7 @@
 <div class="inner">
 <h3 class="card-title">Questions</h3>
 <ul>
-<li>How do you write a lesson using R Markdown and <a href="https://carpentries.github.io/sandpaper/" class="external-link">sandpaper</a>?</li>
+<li>What is an accelerator?</li>
 </ul>
 </div>
 </div>
@@ -263,114 +287,52 @@
 <div class="inner bordered">
 <h3 class="card-title">Objectives</h3>
 <ul>
-<li>Explain how to use markdown with the new lesson template</li>
-<li>Demonstrate how to include pieces of code, figures, and nested challenge blocks</li>
+<li>Understand what accelerators are</li>
+<li>Understand what FPGAs are</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 </div>
-<section id="introduction"><h2 class="section-heading">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<section id="what-are-accelerators"><h2 class="section-heading">What are accelerators?<a class="anchor" aria-label="anchor" href="#what-are-accelerators"></a>
 </h2>
 <hr class="half-width">
-<p>This is a lesson created via The Carpentries Workbench. It is written in <a href="https://pandoc.org/MANUAL.txt" class="external-link">Pandoc-flavored Markdown</a> for static files and <a href="https://rmarkdown.rstudio.com/" class="external-link">R Markdown</a> for dynamic files that can render code into output. Please refer to the <a href="https://carpentries.github.io/sandpaper-docs/" class="external-link">Introduction to The Carpentries Workbench</a> for full documentation.</p>
-<p>What you need to know is that there are three sections required for a valid Carpentries lesson template:</p>
-<ol style="list-style-type: decimal">
-<li>
-<code>questions</code> are displayed at the beginning of the episode to prime the learner for the content.</li>
-<li>
-<code>objectives</code> are the learning objectives for an episode displayed with the questions.</li>
-<li>
-<code>keypoints</code> are displayed at the end of the episode to reinforce the objectives.</li>
-</ol>
-<div id="challenge1" class="callout challenge">
-<div class="callout-square">
-<i class="callout-icon" data-feather="zap"></i>
-</div>
-<div id="challenge-1-can-you-do-it" class="callout-inner">
-<h3 class="callout-title">Challenge 1: Can you do it?<a class="anchor" aria-label="anchor" href="#challenge-1-can-you-do-it"></a>
+<p>Accelerators are devices which can be connected to computers (aka <em>hosts</em>) and used to perform certain kinds of computation much faster than CPUs. The most common accelerators in HPC systems today are graphical processing units (GPUs) which were originally developed to process large numbers of graphics primitives (e.g. pixels, triangles and lines) for rendering 3D computer graphics. Due to their history, their particular strength is being able to perform a large number of calculations in parallel. State of the art GPUs have over 10,000 processing units, much larger than the typical 100 or so cores found in most HPC-focused CPUs, making them particularly suitable for applications where one operation is applied to many pieces of data.</p>
+<p>TODO image of node with accelerator attached</p>
+<p>The key things to note about accelerators generally are:</p>
+<ul>
+<li>They typically have separate memory to main memory
+<ul>
+<li>Data must be transferred to/from device</li>
+<li>Performance can be affected by slow data transfer</li>
+</ul>
+</li>
+<li>They can compute asynchronously
+<ul>
+<li>The host (i.e. CPU) can continue doing work</li>
+<li>Care must be taken to synchronise at key points</li>
+</ul>
+</li>
+</ul>
+<p>During this section we will be using the term <em>device</em> to refer to some computing device or accelerator attached to a computer, which we will call the <em>host</em>.</p>
+<div class="section level3">
+<h3 id="fpgas">FPGAs<a class="anchor" aria-label="anchor" href="#fpgas"></a>
 </h3>
-<div class="callout-content">
-<p>What is the output of this command?</p>
-<div class="codewrapper sourceCode" id="cb1">
-<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">paste</span><span class="op">(</span><span class="st">"This"</span>, <span class="st">"new"</span>, <span class="st">"lesson"</span>, <span class="st">"looks"</span>, <span class="st">"good"</span><span class="op">)</span></span></code></pre>
-</div>
-</div>
-</div>
-</div>
-<div id="accordionSolution1" class="accordion challenge-accordion accordion-flush">
-<div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
-  <h4 class="accordion-header" id="headingSolution1">
-  Output
-  </h4>
-</button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
-<div class="accordion-body">
-<div class="codewrapper">
-<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="output" tabindex="0"><code>[1] "This new lesson looks good"</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div id="challenge2" class="callout challenge">
-<div class="callout-square">
-<i class="callout-icon" data-feather="zap"></i>
-</div>
-<div id="challenge-2-how-do-you-nest-solutions-within-challenge-blocks" class="callout-inner">
-<h3 class="callout-title">Challenge 2: how do you nest solutions within challenge blocks?<a class="anchor" aria-label="anchor" href="#challenge-2-how-do-you-nest-solutions-within-challenge-blocks"></a>
-</h3>
-<div class="callout-content">
-
-</div>
-</div>
-</div>
-<div id="accordionSolution2" class="accordion challenge-accordion accordion-flush">
-<div class="accordion-item">
-<button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
-  <h4 class="accordion-header" id="headingSolution2">
-  Show me the solution
-  </h4>
-</button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
-<div class="accordion-body">
-<p>You can add a line with at least three colons and a <code>solution</code> tag.</p>
-</div>
-</div>
-</div>
-</div>
-</section><section id="figures"><h2 class="section-heading">Figures<a class="anchor" aria-label="anchor" href="#figures"></a>
-</h2>
-<hr class="half-width">
-<p>You can also include figures generated from R Markdown:</p>
-<div class="codewrapper sourceCode" id="cb3">
-<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
-</h3>
-<pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">pie</span><span class="op">(</span></span>
-<span>  <span class="fu">c</span><span class="op">(</span>Sky <span class="op">=</span> <span class="fl">78</span>, <span class="st">"Sunny side of pyramid"</span> <span class="op">=</span> <span class="fl">17</span>, <span class="st">"Shady side of pyramid"</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, </span>
-<span>  init.angle <span class="op">=</span> <span class="fl">315</span>, </span>
-<span>  col <span class="op">=</span> <span class="fu">c</span><span class="op">(</span><span class="st">"deepskyblue"</span>, <span class="st">"yellow"</span>, <span class="st">"yellow3"</span><span class="op">)</span>, </span>
-<span>  border <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre>
-</div>
-<figure style="text-align: center"><img src="fig/01-introduction-rendered-pyramid-1.png" alt="pie chart illusion of a pyramid" class="figure mx-auto d-block"><figcaption>
-Sun arise each and every morning
-</figcaption></figure><p>Or you can use standard markdown for static figures with the following syntax:</p>
-<p><code>![optional caption that appears below the figure](figure url){alt='alt text for accessibility purposes'}</code></p>
-<figure><img src="https://raw.githubusercontent.com/carpentries/logo/master/Badge_Carpentries.svg" alt="Blue Carpentries hex person logo with no text." class="figure mx-auto d-block"><figcaption>You belong in The Carpentries!</figcaption></figure></section><section id="math"><h2 class="section-heading">Math<a class="anchor" aria-label="anchor" href="#math"></a>
-</h2>
-<hr class="half-width">
-<p>One of our episodes contains <span class="math inline">\(\LaTeX\)</span> equations when describing how to create dynamic reports with {knitr}, so we now use mathjax to describe this:</p>
-<p><code>$\alpha = \dfrac{1}{(1 - \beta)^2}$</code> becomes: <span class="math inline">\(\alpha = \dfrac{1}{(1 - \beta)^2}\)</span></p>
-<p>Cool, right?</p>
+<p>The field-programmable gate array (FPGA) is another kind of accelerator which is unlike both CPUs and GPUs. To understand how it differs, and why it’s useful, it’s instructive to recap how a CPU works at a fundamental level.</p>
+<p>CPUs (and GPUs) are given a description of a computation in terms of a list of instructions, each of which must be fetched from storage, decoded and then executed by a relevant unit of the CPU. For example addition, binary OR, if statements, and movement of data all have specific instructions or groups of instructions that tell the computing units to perform that operation. Each type of instruction is handled by different subunits in the CPU, for example a floating-point unit (FPU) for non-integer arithmetic. Within each of the subunits there is circuitry which actually performs the operation on given inputs. Let’s look at an example to understand how these instructions can be described “in hardware”.</p>
+<p>Take the example algorithm saxpy or “single-precision <span class="math inline">\(a\)</span> times <span class="math inline">\(x\)</span> plus <span class="math inline">\(y\)</span>”:</p>
+<pre><code>for (int i=0; i&lt;N; ++i) {
+  result[i] = a * x[i] + y[i];
+}</code></pre>
+<p>The corresponding pseudocode listing the low-level instructions roughly look like:</p>
+<pre><code>move a, x[i] and y[i] into registers within the CPU
+multiply a and x[i] in FPU, store result in register
+add y[i] to previous result in FPU, store result in register
+... handle loop</code></pre>
+<p>The key computations happening in this algorithm are the multiplication and addition, each which are performed by some piece of circuitry within the FPU. We could think about the entire algorithm in terms of just the circuitry like so:</p>
+<p>TODO diagram of dataflow</p>
+<p>This is exactly what FPGAs are designed to do: <strong>represent algorithms as data flowing through pieces of circuitry</strong>. This is what is meant by implementing an algorithm “in hardware”. Why is this useful? The fetch-decode-execute cycle itself consumes both time and energy so an algorithm described as data flowing through circuitry wastes no time or energy handling instructions; it’s all devoted to the computation actually being carried out. What makes FPGAs particularly useful for general purpose work is that they are able to change the implemented circuit dynamically as required by the programmer.</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
@@ -380,14 +342,209 @@ Sun arise each and every morning
 </h3>
 <div class="callout-content">
 <ul>
-<li>Use <code>.md</code> files for episodes when you want static content</li>
-<li>Use <code>.Rmd</code> files for episodes when you need to generate output</li>
-<li>Run <code>sandpaper::check_lesson()</code> to identify any issues with your lesson</li>
-<li>Run <code>sandpaper::build_lesson()</code> to preview your lesson locally</li>
+<li>Accelerators are devices used to offload particular kinds of computation</li>
+<li>FPGAs are a type of accelerator used to implement algorithms in hardware</li>
+<li>OpenCL is a framework for managing accelerators</li>
 </ul>
 </div>
 </div>
 </div>
+<!-- 
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use. 
+ -->
+</div>
+</section></section><section id="aio-02-opencl"><p>Content from <a href="02-opencl.html">OpenCL</a></p>
+<hr>
+<p> Last updated on 2022-09-17 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What is OpenCL?</li>
+<li>How does OpenCL let me program accelerators?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Understand OpenCL and its use in programming accelerators</li>
+<li>Be able to describe main components of an OpenCL program</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section id="opencl"><h2 class="section-heading">OpenCL<a class="anchor" aria-label="anchor" href="#opencl"></a>
+</h2>
+<hr class="half-width">
+<p>OpenCL is a framework for managing accelerators, initially developed in 2009, and is maintained by the Khronos Group. The components particularly relevant to programming FPGAs are:</p>
+<ol style="list-style-type: decimal">
+<li>A language for describing computational kernels in a (nearly) device-agnostic way</li>
+<li>A runtime which interfaces with specific devices attached to the machine running an OpenCL code</li>
+<li>An API for programmatically finding attached devices, transferring data, and launching kernels</li>
+</ol></section><section id="opencl-c"><h2 class="section-heading">OpenCL C<a class="anchor" aria-label="anchor" href="#opencl-c"></a>
+</h2>
+<hr class="half-width">
+<p>This will not be used in this workshop. See <a href="https://www.intel.com/content/www/us/en/software/programmable/sdk-for-opencl/overview.html" class="external-link">Intel’s FPGA resources</a> for more information on using OpenCL C/C++ to write kernels.</p>
+<p>We will be using Xilinx’s C-based Vitis HLS language in this workshop.</p>
+</section><section id="anatomy-of-an-opencl-program"><h2 class="section-heading">Anatomy of an OpenCL program<a class="anchor" aria-label="anchor" href="#anatomy-of-an-opencl-program"></a>
+</h2>
+<hr class="half-width">
+<p>The saxpy algorithm from the previous section can be written as an HLS kernel like so:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> saxpy(<span class="dt">double</span> *x, <span class="dt">double</span> *y, <span class="dt">double</span> *out, <span class="dt">double</span> a, <span class="dt">int</span> N) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; N; i++) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    out[i] = a*x[i]+y[i];</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
+</div>
+<p>While this might seem like a simple function, it’s only the <strong>kernel</strong>, the function that is run on the device. The hostside code can look significantly more complex, mainly due to the complexity of managing devices, data transfers and kernel launches. Here’s a minimal, complete example of hostside code capable of running the above kernel on a device:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;vector&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;host_support.h&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;CL/cl2.hpp&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">int</span> N = <span class="dv">1000</span>;</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">double</span> a = <span class="fl">2.0</span>;</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">int</span> BUFFER_SIZE = N*<span class="kw">sizeof</span>(<span class="dt">double</span>);</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="bu">std::</span>string XCLBIN_FILE = <span class="st">"example_kernel.xclbin"</span>;</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main(<span class="dt">int</span> argc, <span class="at">const</span> <span class="dt">char</span> **argv)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD OPENCL DEVICE + BINARY FILE</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  cl::Context* context_p;</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  cl::Program* program_p;</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;cl::Device&gt; devices;</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>tie(program_p, context_p, devices)=initialiseDevice(<span class="st">"Xilinx"</span>, <span class="st">"u280"</span>, XCLBIN_FILE);</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  cl::Device device = devices[<span class="dv">0</span>]; <span class="co">// Choose first device from results</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  cl::Context context = *context_p;</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  cl::Program program = *program_p;</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  cl_int err;</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  cl::CommandQueue queue(context, device, CL_QUEUE_PROFILING_ENABLE, &amp;err);</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD KERNEL</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  cl::KernelFunctor&lt;</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    cl::Buffer, cl::Buffer, cl::Buffer, <span class="dt">double</span>, <span class="dt">int</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  &gt; saxpy_kernel = cl::Kernel(program, <span class="st">"saxpy"</span>);</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="co">// CREATE DEVICE-SIDE BUFFERS (i.e. allocate device memory)</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  cl::Buffer x_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  cl::Buffer y_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="co">// CREATE CORRESPONDING HOST-SIDE BUFFERS</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *x_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(x_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *y_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(y_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *out_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(out_d, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD DATA INTO HOST-SIDE</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; N; i++) {</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>      x_h[i] = i/<span class="fl">3.0</span>;</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>      y_h[i] = i/<span class="fl">2.0</span>;</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TRANSFER DATA TO DEVICE</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  queue.enqueueMigrateMemObjects({x_d, y_d},<span class="dv">0</span>);</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="co">// QUEUE KERNEL</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  saxpy_kernel(cl::EnqueueArgs(queue, cl::NDRange(<span class="dv">1</span>), cl::NDRange(<span class="dv">1</span>)), x_d, y_d, out_d, a, N);</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="co">// SYNCHRONISE</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  queue.finish();</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TRANSFER DATA TO HOST</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  queue.enqueueMigrateMemObjects({out_d}, CL_MIGRATE_MEM_OBJECT_HOST);</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="co">// SYNCHRONISE AGAIN</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  queue.finish();</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
+</div>
+<p>We’ll break this down over the next few sections into the following major pieces:</p>
+<ul>
+<li>OpenCL initialisation
+<ul>
+<li>How to find valid, connected OpenCL devices?</li>
+<li>What are contexts, programs and queues and how do we set them up?</li>
+<li>How do I compile a kernel?</li>
+<li>How can I load my kernel?</li>
+</ul>
+</li>
+<li>Data transfer and memory management
+<ul>
+<li>What are buffers?</li>
+<li>How can I allocate memory on the device?</li>
+<li>How can I transfer data to and from the device?</li>
+</ul>
+</li>
+<li>Kernel launching and synchronisation
+<ul>
+<li>How can I launch kernels?</li>
+<li>How can is synchronise host and device?</li>
+</ul>
+</li>
+</ul>
+<!-- 
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use. 
+ --></section></section><section id="aio-03-data-transfer"><p>Content from <a href="03-data-transfer.html">Data Transfer</a></p>
+<hr>
+<p> Last updated on 2022-09-17 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/03-data-transfer.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>Why do we need to transfer data?</li>
+<li>How do we describe <em>where</em> data currently is?</li>
+<li>How can we transfer data between host and device?</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Be able to address memory on both host and device</li>
+<li>Be able to transfer data between host and device</li>
+<li>Understand the performance implications of data transfer</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section id="allocating-data-with-buffers"><h2 class="section-heading">Allocating data with buffers<a class="anchor" aria-label="anchor" href="#allocating-data-with-buffers"></a>
+</h2>
+<hr class="half-width">
+<p>OpenCL allocates space in memory <em>on a device</em> in <strong>buffers</strong>.</p>
 <!-- 
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 
@@ -411,8 +568,8 @@ any links that you are not going to use.
         <p>Materials licensed under <a href="LICENSE.html">CC-BY 4.0</a> by the authors</p>
         
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.9.5" class="external-link">sandpaper (0.9.5)</a>,
-        <a href="https://github.com/carpentries/pegboard/tree/0.3.1" class="external-link">pegboard (0.3.1)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.9.6" class="external-link">sandpaper (0.9.6)</a>,
+        <a href="https://github.com/carpentries/pegboard/tree/0.3.2" class="external-link">pegboard (0.3.2)</a>,
       and <a href="https://github.com/carpentries/varnish/tree/0.2.4" class="external-link">varnish (0.2.4)</a>.</p>
 			</div>
 		</footer>
@@ -435,8 +592,8 @@ any links that you are not going to use.
   "url": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/aio.html",
   "identifier": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/aio.html",
   "dateCreated": "2022-09-13",
-  "dateModified": "2022-09-13",
-  "datePublished": "2022-09-13"
+  "dateModified": "2022-09-17",
+  "datePublished": "2022-09-17"
 }
 
   </script><script>

@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/01-accel-and-opencl.html</loc>
+  </url>
+  <url>
     <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/01-introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/02-opencl.html</loc>
+  </url>
+  <url>
+    <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/03-data-transfer.html</loc>
   </url>
   <url>
     <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/CODE_OF_CONDUCT.html</loc>
@@ -19,7 +28,16 @@
     <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/index.html</loc>
   </url>
   <url>
+    <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/01-accel-and-opencl.html</loc>
+  </url>
+  <url>
     <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/01-introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/02-opencl.html</loc>
+  </url>
+  <url>
+    <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/03-data-transfer.html</loc>
   </url>
   <url>
     <loc>https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/CODE_OF_CONDUCT.html</loc>
