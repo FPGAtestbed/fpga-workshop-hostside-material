@@ -2,8 +2,4 @@
 site: sandpaper::sandpaper_site
 ---
 
-This is a new lesson built with [The Carpentries Workbench][workbench]. 
-
-
-[workbench]: https://carpentries.github.io/sandpaper-docs
-
+This is the material for the hostside component of the FPGA Testbed Workshop. Please send comments and suggestions to [jamie.quinn@ucl.ac.uk](mailto:jamie.quinn@ucl.ac.uk).
