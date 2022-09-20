@@ -201,7 +201,19 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="03-data-transfer.html">3. Data Transfer</a>
+        <a href="03-opencl-initialisation.html">3. OpenCL Initialisation</a>
+    </div>
+<!--/div.accordion-header-->
+        
+  </div>
+<!--/div.accordion-item-->
+</div>
+<!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush5">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading5">
+        <a href="04-data-transfer-memory-management.html">4. Data Transfer and Memory Management</a>
     </div>
 <!--/div.accordion-header-->
         
@@ -356,7 +368,7 @@ any links that you are not going to use.
 </div>
 </section></section><section id="aio-02-opencl"><p>Content from <a href="02-opencl.html">OpenCL</a></p>
 <hr>
-<p> Last updated on 2022-09-17 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p> Last updated on 2022-09-20 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -392,15 +404,20 @@ any links that you are not going to use.
 <hr class="half-width">
 <p>OpenCL is a framework for managing accelerators, initially developed in 2009, and is maintained by the Khronos Group. The components particularly relevant to programming FPGAs are:</p>
 <ol style="list-style-type: decimal">
-<li>A language for describing computational kernels in a (nearly) device-agnostic way</li>
+<li>A language for describing computational kernels in a (nearly) device-agnostic way (not used in this workshop!)</li>
 <li>A runtime which interfaces with specific devices attached to the machine running an OpenCL code</li>
 <li>An API for programmatically finding attached devices, transferring data, and launching kernels</li>
-</ol></section><section id="opencl-c"><h2 class="section-heading">OpenCL C<a class="anchor" aria-label="anchor" href="#opencl-c"></a>
+</ol></section><section id="the-opencl-runtime"><h2 class="section-heading">The OpenCL Runtime<a class="anchor" aria-label="anchor" href="#the-opencl-runtime"></a>
 </h2>
 <hr class="half-width">
-<p>This will not be used in this workshop. See <a href="https://www.intel.com/content/www/us/en/software/programmable/sdk-for-opencl/overview.html" class="external-link">Intel’s FPGA resources</a> for more information on using OpenCL C/C++ to write kernels.</p>
-<p>We will be using Xilinx’s C-based Vitis HLS language in this workshop.</p>
-</section><section id="anatomy-of-an-opencl-program"><h2 class="section-heading">Anatomy of an OpenCL program<a class="anchor" aria-label="anchor" href="#anatomy-of-an-opencl-program"></a>
+<p>Each device vendor that supports OpenCL provides a runtime that can interface with OpenCL programs, so Intel, Nvidia, AMD, Xilinx and others all provide runtimes for their devices. The associated runtime must be installed in order for your OpenCL code to use a particular device. Because of the use of a “runtime” instead of a more traditional library, and OpenCL code should not require recompilation to interface with different devices; the differences are handled by the runtime itself. In this workshop we will be using the runtime supplied as part of Xilinx’s Vitis toolchain which allows us to interface with attached FPGAs (although we will mainly be using Xilinx’s simulation mode in this workshop).</p>
+<p>In general OpenCL runtimes provide a few functions to a running OpenCL program:</p>
+<ol style="list-style-type: decimal">
+<li>Finding and accessing all devices attached to the running computer</li>
+<li>Handling any data transfer and memory management requests</li>
+<li>Managing queues (i.e. kernel launches, events, and synchronisation)</li>
+<li>Optionally compiling OpenCL kernels during runtime (this is <em>not</em> the case for FPGAs however)</li>
+</ol></section><section id="anatomy-of-an-opencl-program"><h2 class="section-heading">Anatomy of an OpenCL program<a class="anchor" aria-label="anchor" href="#anatomy-of-an-opencl-program"></a>
 </h2>
 <hr class="half-width">
 <p>The saxpy algorithm from the previous section can be written as an HLS kernel like so:</p>
@@ -413,7 +430,7 @@ any links that you are not going to use.
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
 </div>
-<p>While this might seem like a simple function, it’s only the <strong>kernel</strong>, the function that is run on the device. The hostside code can look significantly more complex, mainly due to the complexity of managing devices, data transfers and kernel launches. Here’s a minimal, complete example of hostside code capable of running the above kernel on a device:</p>
+<p>While this might seem like a simple function, it’s only the <strong>kernel</strong>, the function that is run on the device. The hostside code can look significantly more complex, mainly due to the necessary complexity of managing devices, data transfers and kernel launches. Here’s a minimal, complete example of hostside code capable of running the above kernel on a device:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -445,7 +462,7 @@ any links that you are not going to use.
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    cl::Buffer, cl::Buffer, cl::Buffer, <span class="dt">double</span>, <span class="dt">int</span></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  &gt; saxpy_kernel = cl::Kernel(program, <span class="st">"saxpy"</span>);</span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="co">// CREATE DEVICE-SIDE BUFFERS (i.e. allocate device memory)</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="co">// create device-side buffers (i.e. allocate device memory)</span></span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  cl::Buffer x_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  cl::Buffer y_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
@@ -479,7 +496,8 @@ any links that you are not going to use.
 <span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
 </div>
-<p>We’ll break this down over the next few sections into the following major pieces:</p>
+<p>If you’ve seen OpenCL code before this should be relatively familiar with one exception: for codes targeting CPU and GPU the source code for the kernel is usually loaded and compiled by the runtime (at runtime); here, we compile the kernel separately using Xilinx tools and load the pre-compiled binary (with filetype <code>.xclbin</code>). We have also not provided much error handling for simplicity so please do not use this code in production code!</p>
+<p>If you haven’t seen OpenCL code before, don’t worry, we’ll break this down over the next few sections into the following major pieces:</p>
 <ul>
 <li>OpenCL initialisation
 <ul>
@@ -499,16 +517,124 @@ any links that you are not going to use.
 <li>Kernel launching and synchronisation
 <ul>
 <li>How can I launch kernels?</li>
-<li>How can is synchronise host and device?</li>
+<li>How can I synchronise host and device?</li>
 </ul>
 </li>
 </ul>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Keypoints<a class="anchor" aria-label="anchor" href="#keypoints1"></a>
+</h3>
+<div class="callout-content">
+<ul>
+<li>OpenCL is a framework for managing accelerators</li>
+<li>The OpenCL runtime provides functions for interfacing with accelerators</li>
+<li>OpenCL can involve significant boilerplate</li>
+</ul>
+</div>
+</div>
+</div>
 <!-- 
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 
- --></section></section><section id="aio-03-data-transfer"><p>Content from <a href="03-data-transfer.html">Data Transfer</a></p>
+ -->
+</section></section><section id="aio-03-opencl-initialisation"><p>Content from <a href="03-opencl-initialisation.html">OpenCL Initialisation</a></p>
 <hr>
-<p> Last updated on 2022-09-17 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/03-data-transfer.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<p> Last updated on 2022-09-20 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/03-opencl-initialisation.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+<div class="text-end">
+          <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
+        </div>
+<div class="overview card">
+<h2 class="card-header">Overview</h2>
+<div class="row g-0">
+<div class="col-md-4">
+<div class="card-body">
+<div class="inner">
+<h3 class="card-title">Questions</h3>
+<ul>
+<li>What are OpenCL’s contexts, programs, devices and queues?</li>
+<li>How do I find and connect to attached OpenCL devices?</li>
+<li>How can I compile and/or load a kernel</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="col-md-8">
+<div class="card-body">
+<div class="inner bordered">
+<h3 class="card-title">Objectives</h3>
+<ul>
+<li>Understand contexts, programs and queues</li>
+<li>Be able to request a specific device from the OpenCL runtime</li>
+<li>Be able to pre-compile and load kernels</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Let’s breakdown the initialisation step of the minimal saxpy code from the previous section:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// LOAD OPENCL DEVICE + BINARY FILE</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cl::Context* context_p;</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cl::Program* program_p;</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>vector&lt;cl::Device&gt; devices;</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>tie(program_p, context_p, devices)=initialiseDevice(<span class="st">"Xilinx"</span>, <span class="st">"u280"</span>, XCLBIN_FILE);</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>cl::Device device = devices[<span class="dv">0</span>]; <span class="co">// Choose first device from results</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>cl::Context context = *context_p;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>cl::Program program = *program_p;</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>cl_int err;</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>cl::CommandQueue queue(context, device, CL_QUEUE_PROFILING_ENABLE, &amp;err);</span></code></pre>
+</div>
+<section id="contexts-programs-devices-and-queues"><h2 class="section-heading">Contexts, programs, devices and queues<a class="anchor" aria-label="anchor" href="#contexts-programs-devices-and-queues"></a>
+</h2>
+<hr class="half-width">
+<p>The <strong>context</strong> is an OpenCL structure containing global information about the currently running code, such as which devices are currently being used. For the most part, you can set it up in the initialisation stage and forget about it. The initialisation here is handled by the <code>initialiseDevice</code> function provided by the <code>host_support</code> library.</p>
+<p>A <strong>program</strong> is a collection of kernels and device functions (that are functions that will only be run on the devices). OpenCL codes targeting CPUs and GPUs may compile this program from a provided source during runtime but on FPGAs it is more standard to precompile the kernel and then load the <code>.xclbin</code> file. Here, the loading of the program is again handled by <code>initialiseDevice</code>.</p>
+<p>A <strong>device</strong> is any device capable of running an OpenCL kernel. Each device identifies itself to the OpenCL API via a string containing the vendor and type of device, so here we can use the <code>initialiseDevice</code> function (again) to find and fetch details of all devices with identity string matching that of the “u280” FPGA made by “Xilinx”. Since <code>devices</code> is a vector, we take the first device found. If OpenCL cannot find any device with these identifiers, <code>devices</code> will be empty and the program will crash so, again, please do not use this code in production.</p>
+<p>Finally, a <strong>queue</strong> is OpenCL’s way of organising data transfer requests, kernel launches, event handling, etc, essentially any tasks that could require a specific order. Remember devices are mostly asynchronous with respect to the host so a queue is required to ensure certain tasks happen in the expected order. The host can synchronise a queue, waiting until the queue has finished or waiting for a specific event to be handling (e.g. signalling the end of a particular kernel). There can be multiple queues at any one time, allowing a programmer to, for example, queue both a kernel launch and a data transfer task at the same time to overlap their runtimes. This is advanced use of queues however and we will only be using a single queue in this workshop.</p>
+</section><section id="loading-a-kernel"><h2 class="section-heading">Loading a kernel<a class="anchor" aria-label="anchor" href="#loading-a-kernel"></a>
+</h2>
+<hr class="half-width">
+<p>OpenCL provides a useful <code>KernelFunctor</code> class which wraps a kernel and presents it as if it were a regular function. Alternatively, you can use a <code>Kernel</code> object directly and set arguments manually via <code>setArg</code> however we have found this to be unnecessarily complex and error-prone. We recommend using <code>KernelFunctor</code> where possible.</p>
+<p>Let’s compare the function signature for the kernel <code>saxpy</code>:</p>
+<pre><code>void saxpy(double *x, double *y, double *out, double a, int N) {</code></pre>
+<p>with its corresponding <code>KernelFunctor</code>:</p>
+<pre><code>cl::KernelFunctor&lt;
+  cl::Buffer, cl::Buffer, cl::Buffer, double, int
+&gt; saxpy_kernel = cl::Kernel(program, "saxpy");</code></pre>
+<p>We tell OpenCL we want to load the kernel <code>saxpy</code> from the program loaded during initialisation and then we wrap that kernel in a <code>KernelFunctor</code>. Notice the <em>template</em> arguments to <code>KernelFunctor</code> correspond to the <em>function</em> arguments of the kernel <code>saxpy</code> where array pointer arguments correspond to <code>cl::Buffer</code>s (more on these later). Calling the kernel then looks somewhat like calling a function called <code>saxpy_kernel</code>:</p>
+<pre><code><span><span class="fu">saxpy_kernel</span><span class="op">(</span><span class="fu">cl</span><span class="fu">::</span><span class="fu">EnqueueArgs</span><span class="op">(</span><span class="va">queue</span>, <span class="fu">cl</span><span class="fu">::</span><span class="fu">NDRange</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="fu">cl</span><span class="fu">::</span><span class="fu">NDRange</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, <span class="va">x_d</span>, <span class="va">y_d</span>, <span class="va">out_d</span>, <span class="va">a</span>, <span class="va">N</span><span class="op">)</span>;</span></code></pre>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Keypoints<a class="anchor" aria-label="anchor" href="#keypoints1"></a>
+</h3>
+<div class="callout-content">
+<ul>
+<li>An OpenCL context is a structure containing global information about the OpenCL state</li>
+<li>A program is a collection of compiled kernels</li>
+<li>A device is a valid OpenCL device capable of running a kernel</li>
+<li>A queue is an ordered list of tasks to be performed on or by the device</li>
+<li>Kernels are loaded from programs and can be wrapped in KernelFunctors for ease of calling</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- 
+Place links that you need to refer to multiple times across pages here. Delete
+any links that you are not going to use. 
+ -->
+</section></section><section id="aio-04-data-transfer-memory-management"><p>Content from <a href="04-data-transfer-memory-management.html">Data Transfer and Memory Management</a></p>
+<hr>
+<p> Last updated on 2022-09-20 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/04-data-transfer-memory-management.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -541,10 +667,43 @@ any links that you are not going to use.
 </div>
 </div>
 </div>
-<section id="allocating-data-with-buffers"><h2 class="section-heading">Allocating data with buffers<a class="anchor" aria-label="anchor" href="#allocating-data-with-buffers"></a>
+<section id="why-do-we-need-to-transfer-data"><h2 class="section-heading">Why do we need to transfer data?<a class="anchor" aria-label="anchor" href="#why-do-we-need-to-transfer-data"></a>
 </h2>
 <hr class="half-width">
-<p>OpenCL allocates space in memory <em>on a device</em> in <strong>buffers</strong>.</p>
+<p>Remember, most[^1] OpenCL devices have memory spaces separate from the main memory used by the CPU (aka <strong>host memory</strong>), so for the device to access some piece of data currently on the host, it must be transferred to the <strong>device memory</strong>. Since there are two separate memory spaces, we also need to be able to independently allocate memory in each space.</p>
+<p>[1]: Some accelerators, such as graphics units within CPUs, share memory spaces with the CPU. In those cases main memory can usually be addressed directly from the device. Both Nvidia and AMD GPUs also provide software abstractions of “unified memory” where the device and host appear to access the same memory space and the runtime transfers data automatically but this can lead to inefficient data transfer patterns.</p>
+</section><section id="allocating-data-with-buffers"><h2 class="section-heading">Allocating data with buffers<a class="anchor" aria-label="anchor" href="#allocating-data-with-buffers"></a>
+</h2>
+<hr class="half-width">
+<p>OpenCL allocates space in device memory in abstractions of arrays called <strong>buffers</strong>. Recall our saxpy program:</p>
+<div class="codewrapper sourceCode" id="cb1">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cl::Buffer x_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cl::Buffer y_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span></code></pre>
+</div>
+<p>Here we have create two input buffers <code>x_d</code> and <code>y_d</code> and one output buffer <code>out_d</code>, all of size <span class="math inline">\(N\)</span> doubles. Note we have suffixed each variable with <code>_d</code> to signify that these are <strong>deviceside buffers</strong>. We pass the OpenCL context so it understands which device we wish to access and flags to indicate whether we need to read or write to these memory spaces from the device. OpenCL can allocate hostside memory mapped to each buffer like so:</p>
+<div class="codewrapper sourceCode" id="cb2">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *x_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(x_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *y_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(y_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *out_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(out_d, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span></code></pre>
+</div>
+<p>Again notice our use of the <code>_h</code> suffix to signify that these pointer point to hostside data. This is a useful convention when dealing with different memory spaces.</p>
+</section><section id="transferring-data-between-host-and-device"><h2 class="section-heading">Transferring data between host and device<a class="anchor" aria-label="anchor" href="#transferring-data-between-host-and-device"></a>
+</h2>
+<hr class="half-width">
+<p>Data can be transferred between device and host using a migrate task <code>queue.enqueueMigrateMemObjects</code>:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>queue.enqueueMigrateMemObjects({x_d, y_d},<span class="dv">0</span>);</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>queue.enqueueMigrateMemObjects({out_d}, CL_MIGRATE_MEM_OBJECT_HOST);</span></code></pre>
+</div>
+<p>Because we’ve already done some work in setting up buffers and mapping those to hostside memory, the data transfer calls are relatively simple and less error-prone as a result. It is still possible to transfer data without mapping but more care must be taken in each transfer call.</p>
 <!-- 
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 

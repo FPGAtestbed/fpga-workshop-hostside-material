@@ -85,11 +85,11 @@
   FPGA Testbed Workshop - Hostside
 </div>
 
-<aside class="col-md-12 lesson-progress"><div style="width: 50%" class="percentage">
-    50%
+<aside class="col-md-12 lesson-progress"><div style="width: 33%" class="percentage">
+    33%
   </div>
   <div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 50%" aria-valuenow="50" aria-label="Lesson Progress" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar incubator" role="progressbar" style="width: 33%" aria-valuenow="33" aria-label="Lesson Progress" aria-valuemin="0" aria-valuemax="100">
     </div>
   </div>
 </aside><div class="container">
@@ -164,7 +164,7 @@
     <div id="flush-collapsecurrent" class="accordion-collapse collapse show" aria-labelledby="flush-headingcurrent" data-bs-parent="#accordionFlushcurrent">
       <div class="accordion-body">
         <ul><li><a href="#opencl">OpenCL</a></li>
-<li><a href="#opencl-c">OpenCL C</a></li>
+<li><a href="#the-opencl-runtime">The OpenCL Runtime</a></li>
 <li><a href="#anatomy-of-an-opencl-program">Anatomy of an OpenCL program</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
@@ -175,7 +175,16 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="03-data-transfer.html">3. Data Transfer</a>
+        <a href="03-opencl-initialisation.html">3. OpenCL Initialisation</a>
+    </div><!--/div.accordion-header-->
+        
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush5">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading5">
+        <a href="04-data-transfer-memory-management.html">4. Data Transfer and Memory Management</a>
     </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
@@ -223,16 +232,16 @@
   <div class="col-xl-8 col-lg-12 primary-content">
     <nav class="lesson-content mx-md-4" aria-label="Previous and Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
         <a class="chapter-link" href="01-accel-and-opencl.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="03-data-transfer.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="03-opencl-initialisation.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
         <a class="chapter-link" href="01-accel-and-opencl.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: Introduction to</a>
-        <a class="chapter-link float-end" href="03-data-transfer.html" rel="next">Next: Data Transfer... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="03-opencl-initialisation.html" rel="next">Next: OpenCL... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>OpenCL</h1>
-        <p> Last updated on 2022-09-17 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <p> Last updated on 2022-09-20 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
         <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -265,14 +274,18 @@
 <section id="opencl"><h2 class="section-heading">OpenCL<a class="anchor" aria-label="anchor" href="#opencl"></a>
 </h2>
 <hr class="half-width"><p>OpenCL is a framework for managing accelerators, initially developed in 2009, and is maintained by the Khronos Group. The components particularly relevant to programming FPGAs are:</p>
-<ol style="list-style-type: decimal"><li>A language for describing computational kernels in a (nearly) device-agnostic way</li>
+<ol style="list-style-type: decimal"><li>A language for describing computational kernels in a (nearly) device-agnostic way (not used in this workshop!)</li>
 <li>A runtime which interfaces with specific devices attached to the machine running an OpenCL code</li>
 <li>An API for programmatically finding attached devices, transferring data, and launching kernels</li>
-</ol></section><section id="opencl-c"><h2 class="section-heading">OpenCL C<a class="anchor" aria-label="anchor" href="#opencl-c"></a>
+</ol></section><section id="the-opencl-runtime"><h2 class="section-heading">The OpenCL Runtime<a class="anchor" aria-label="anchor" href="#the-opencl-runtime"></a>
 </h2>
-<hr class="half-width"><p>This will not be used in this workshop. See <a href="https://www.intel.com/content/www/us/en/software/programmable/sdk-for-opencl/overview.html" class="external-link">Intel’s FPGA resources</a> for more information on using OpenCL C/C++ to write kernels.</p>
-<p>We will be using Xilinx’s C-based Vitis HLS language in this workshop.</p>
-</section><section id="anatomy-of-an-opencl-program"><h2 class="section-heading">Anatomy of an OpenCL program<a class="anchor" aria-label="anchor" href="#anatomy-of-an-opencl-program"></a>
+<hr class="half-width"><p>Each device vendor that supports OpenCL provides a runtime that can interface with OpenCL programs, so Intel, Nvidia, AMD, Xilinx and others all provide runtimes for their devices. The associated runtime must be installed in order for your OpenCL code to use a particular device. Because of the use of a “runtime” instead of a more traditional library, and OpenCL code should not require recompilation to interface with different devices; the differences are handled by the runtime itself. In this workshop we will be using the runtime supplied as part of Xilinx’s Vitis toolchain which allows us to interface with attached FPGAs (although we will mainly be using Xilinx’s simulation mode in this workshop).</p>
+<p>In general OpenCL runtimes provide a few functions to a running OpenCL program:</p>
+<ol style="list-style-type: decimal"><li>Finding and accessing all devices attached to the running computer</li>
+<li>Handling any data transfer and memory management requests</li>
+<li>Managing queues (i.e. kernel launches, events, and synchronisation)</li>
+<li>Optionally compiling OpenCL kernels during runtime (this is <em>not</em> the case for FPGAs however)</li>
+</ol></section><section id="anatomy-of-an-opencl-program"><h2 class="section-heading">Anatomy of an OpenCL program<a class="anchor" aria-label="anchor" href="#anatomy-of-an-opencl-program"></a>
 </h2>
 <hr class="half-width"><p>The saxpy algorithm from the previous section can be written as an HLS kernel like so:</p>
 <div class="codewrapper sourceCode" id="cb1">
@@ -284,7 +297,7 @@
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
 </div>
-<p>While this might seem like a simple function, it’s only the <strong>kernel</strong>, the function that is run on the device. The hostside code can look significantly more complex, mainly due to the complexity of managing devices, data transfers and kernel launches. Here’s a minimal, complete example of hostside code capable of running the above kernel on a device:</p>
+<p>While this might seem like a simple function, it’s only the <strong>kernel</strong>, the function that is run on the device. The hostside code can look significantly more complex, mainly due to the necessary complexity of managing devices, data transfers and kernel launches. Here’s a minimal, complete example of hostside code capable of running the above kernel on a device:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -316,7 +329,7 @@
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    cl::Buffer, cl::Buffer, cl::Buffer, <span class="dt">double</span>, <span class="dt">int</span></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  &gt; saxpy_kernel = cl::Kernel(program, <span class="st">"saxpy"</span>);</span>
 <span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="co">// CREATE DEVICE-SIDE BUFFERS (i.e. allocate device memory)</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="co">// create device-side buffers (i.e. allocate device memory)</span></span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  cl::Buffer x_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  cl::Buffer y_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
@@ -350,7 +363,8 @@
 <span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
 </div>
-<p>We’ll break this down over the next few sections into the following major pieces:</p>
+<p>If you’ve seen OpenCL code before this should be relatively familiar with one exception: for codes targeting CPU and GPU the source code for the kernel is usually loaded and compiled by the runtime (at runtime); here, we compile the kernel separately using Xilinx tools and load the pre-compiled binary (with filetype <code>.xclbin</code>). We have also not provided much error handling for simplicity so please do not use this code in production code!</p>
+<p>If you haven’t seen OpenCL code before, don’t worry, we’ll break this down over the next few sections into the following major pieces:</p>
 <ul><li>OpenCL initialisation
 <ul><li>How to find valid, connected OpenCL devices?</li>
 <li>What are contexts, programs and queues and how do we set them up?</li>
@@ -364,20 +378,35 @@
 </ul></li>
 <li>Kernel launching and synchronisation
 <ul><li>How can I launch kernels?</li>
-<li>How can is synchronise host and device?</li>
+<li>How can I synchronise host and device?</li>
 </ul></li>
-</ul><!-- 
+</ul><div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Keypoints<a class="anchor" aria-label="anchor" href="#keypoints1"></a>
+</h3>
+<div class="callout-content">
+<ul><li>OpenCL is a framework for managing accelerators</li>
+<li>The OpenCL runtime provides functions for interfacing with accelerators</li>
+<li>OpenCL can involve significant boilerplate</li>
+</ul></div>
+</div>
+</div>
+<!-- 
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 
- --></section></div> <!-- / div.lesson-content -->
+ -->
+</section></div> <!-- / div.lesson-content -->
     </main><!-- / main#main-content.main-content --><nav class="bottom-pagination mx-md-4" aria-label="Previous and Next Chapter"><div class="d-block d-sm-block d-md-none">
         <a class="chapter-link" href="01-accel-and-opencl.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="03-data-transfer.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="03-opencl-initialisation.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
         <a class="chapter-link" href="01-accel-and-opencl.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: Introduction to</a>
-        <a class="chapter-link float-end" href="03-data-transfer.html" rel="next">Next: Data Transfer... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link float-end" href="03-opencl-initialisation.html" rel="next">Next: OpenCL... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
     </nav></div> <!-- / div.primary-content.col-xs-12 -->
 <!-- END:   inst/pkgdown/templates/content-instructor.html-->
@@ -416,7 +445,7 @@ any links that you are not going to use.
   "url": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/02-opencl.html",
   "identifier": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/02-opencl.html",
   "dateCreated": "2022-09-13",
-  "dateModified": "2022-09-17",
+  "dateModified": "2022-09-20",
   "datePublished": "2022-09-20"
 }
 
