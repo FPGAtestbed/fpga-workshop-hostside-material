@@ -2,52 +2,22 @@
 title: Setup
 ---
 
-Outline:
+## Outline
 
-- Introduction to accelerators & OpenCL
+- Introduction to accelerators, FPGAs & OpenCL
 - Buffers, memory management and data transfer
-- Kernel compilation, loading and launching
-- Host-device synchronisation
+- Kernel loading, launching and synchronisation
 
-## Data Sets
+## The example
 
-Download the [data zip file](data/data.zip) and unzip it to your Desktop
+In this section we'll be working on the `saxpy_example` from the [UCL/FPGA_Intro_Workshop repository](https://github.com/UCL/FPGA_Intro_Workshop).
 
-## Software Setup
+## Useful resources
 
-::::::::::::::::::::::::::::::::::::::: discussion
-
-### Details
-
-Setup for different systems can be presented in dropdown menus via a `solution`
-tag. They will join to this discussion block, so you can give a general overview
-of the software used in this lesson here and fill out the individual operating
-systems (and potentially add more, e.g. online setup) in the solutions blocks.
-
-:::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:::::::::::::::: solution
-
-### Windows
-
-Use PuTTY
-
-:::::::::::::::::::::::::
-
-:::::::::::::::: solution
-
-### MacOS
-
-Use Terminal.app
-
-:::::::::::::::::::::::::
-
-
-:::::::::::::::: solution
-
-### Linux
-
-Use Terminal
-
-:::::::::::::::::::::::::
-
+- [The host_support library](https://github.com/FPGAtestbed/host_support)
+- [OpenCL C++ Bindings](https://github.khronos.org/OpenCL-CLHPP/)
+  - This documentation is a little hard to read and sometimes incomplete. It may be that reading the source code of the library is easier.
+- [OpenCL 2.1 Reference Pages](https://man.opencl.org/)
+  - Only documents the C API but can be more informative than the C++ Bindings documentation
+- [The best list of OpenCL error codes I can find](https://streamhpc.com/blog/2013-04-28/opencl-error-codes/)
+- [Vitis™Hardware Acceleration Introduction Tutorial](https://github.com/Xilinx/Vitis-Tutorials/tree/2022.1/Hardware_Acceleration/Introduction)
