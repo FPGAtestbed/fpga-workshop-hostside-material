@@ -85,11 +85,11 @@
   FPGA Testbed Workshop - Hostside
 </div>
 
-<aside class="col-md-12 lesson-progress"><div style="width: 33%" class="percentage">
-    33%
+<aside class="col-md-12 lesson-progress"><div style="width: 25%" class="percentage">
+    25%
   </div>
   <div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 33%" aria-valuenow="33" aria-label="Lesson Progress" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar incubator" role="progressbar" style="width: 25%" aria-valuenow="25" aria-label="Lesson Progress" aria-valuemin="0" aria-valuemax="100">
     </div>
   </div>
 </aside><div class="container">
@@ -144,7 +144,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="01-accel-and-opencl.html">1. Introduction to Accelerators</a>
+        <a href="01-accel-and-fpgas.html">1. Introduction to Accelerators</a>
     </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
@@ -166,6 +166,9 @@
         <ul><li><a href="#opencl">OpenCL</a></li>
 <li><a href="#the-opencl-runtime">The OpenCL Runtime</a></li>
 <li><a href="#anatomy-of-an-opencl-program">Anatomy of an OpenCL program</a></li>
+<li><a href="#opencl-initialisation">OpenCL Initialisation</a></li>
+<li><a href="#contexts-programs-devices-and-queues">Contexts, programs, devices and queues</a></li>
+<li><a href="#resources">Resources</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
         
@@ -175,7 +178,7 @@
 <div class="accordion accordion-flush" id="accordionFlush4">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading4">
-        <a href="03-opencl-initialisation.html">3. OpenCL Initialisation</a>
+        <a href="04-data-transfer-memory-management.html">3. Data Transfer and Memory Management</a>
     </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
@@ -184,7 +187,16 @@
 <div class="accordion accordion-flush" id="accordionFlush5">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading5">
-        <a href="04-data-transfer-memory-management.html">4. Data Transfer and Memory Management</a>
+        <a href="05-kernel-management.html">4. Kernel Management</a>
+    </div><!--/div.accordion-header-->
+        
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush6">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading6">
+        <a href="06-exercise.html">5. Hostside exercise</a>
     </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
@@ -231,17 +243,17 @@
         <!-- START: inst/pkgdown/templates/content-instructor.html -->
   <div class="col-xl-8 col-lg-12 primary-content">
     <nav class="lesson-content mx-md-4" aria-label="Previous and Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
-        <a class="chapter-link" href="01-accel-and-opencl.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="03-opencl-initialisation.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="01-accel-and-fpgas.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
+        <a class="chapter-link float-end" href="04-data-transfer-memory-management.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
-        <a class="chapter-link" href="01-accel-and-opencl.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: Introduction to</a>
-        <a class="chapter-link float-end" href="03-opencl-initialisation.html" rel="next">Next: OpenCL... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="01-accel-and-fpgas.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: Introduction to</a>
+        <a class="chapter-link float-end" href="04-data-transfer-memory-management.html" rel="next">Next: Data Transfer and... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>OpenCL</h1>
-        <p> Last updated on 2022-09-20 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <p> Last updated on 2022-09-28 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/02-opencl.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
         <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -257,6 +269,7 @@
 <h3 class="card-title">Questions</h3>
 <ul><li>What is OpenCL?</li>
 <li>How does OpenCL let me program accelerators?</li>
+<li>How do I find and connect to attached OpenCL devices?</li>
 </ul></div>
 </div>
 </div>
@@ -266,6 +279,8 @@
 <h3 class="card-title">Objectives</h3>
 <ul><li>Understand OpenCL and its use in programming accelerators</li>
 <li>Be able to describe main components of an OpenCL program</li>
+<li>Understand contexts, devices, programs and queues</li>
+<li>Be able to request a specific device from the OpenCL runtime</li>
 </ul></div>
 </div>
 </div>
@@ -277,7 +292,8 @@
 <ol style="list-style-type: decimal"><li>A language for describing computational kernels in a (nearly) device-agnostic way (not used in this workshop!)</li>
 <li>A runtime which interfaces with specific devices attached to the machine running an OpenCL code</li>
 <li>An API for programmatically finding attached devices, transferring data, and launching kernels</li>
-</ol></section><section id="the-opencl-runtime"><h2 class="section-heading">The OpenCL Runtime<a class="anchor" aria-label="anchor" href="#the-opencl-runtime"></a>
+</ol><p>We will be using the <a href="https://github.khronos.org/OpenCL-CLHPP/" class="external-link">C++ bindings for OpenCL</a>, a wrapper around the more traditional C API which makes OpenCL fit better into C++ code. This is sometimes referred to as <strong>opencl-clhpp</strong>.</p>
+</section><section id="the-opencl-runtime"><h2 class="section-heading">The OpenCL Runtime<a class="anchor" aria-label="anchor" href="#the-opencl-runtime"></a>
 </h2>
 <hr class="half-width"><p>Each device vendor that supports OpenCL provides a runtime that can interface with OpenCL programs, so Intel, Nvidia, AMD, Xilinx and others all provide runtimes for their devices. The associated runtime must be installed in order for your OpenCL code to use a particular device. Because of the use of a “runtime” instead of a more traditional library, and OpenCL code should not require recompilation to interface with different devices; the differences are handled by the runtime itself. In this workshop we will be using the runtime supplied as part of Xilinx’s Vitis toolchain which allows us to interface with attached FPGAs (although we will mainly be using Xilinx’s simulation mode in this workshop).</p>
 <p>In general OpenCL runtimes provide a few functions to a running OpenCL program:</p>
@@ -303,73 +319,86 @@
 </h3>
 <pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;string&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;vector&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;host_support.h&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;CL/cl2.hpp&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">int</span> N = <span class="dv">1000</span>;</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">double</span> a = <span class="fl">2.0</span>;</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">int</span> BUFFER_SIZE = N*<span class="kw">sizeof</span>(<span class="dt">double</span>);</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="bu">std::</span>string XCLBIN_FILE = <span class="st">"example_kernel.xclbin"</span>;</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main(<span class="dt">int</span> argc, <span class="at">const</span> <span class="dt">char</span> **argv)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD OPENCL DEVICE + BINARY FILE</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  cl::Context* context_p;</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  cl::Program* program_p;</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;cl::Device&gt; devices;</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>tie(program_p, context_p, devices)=initialiseDevice(<span class="st">"Xilinx"</span>, <span class="st">"u280"</span>, XCLBIN_FILE);</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  cl::Device device = devices[<span class="dv">0</span>]; <span class="co">// Choose first device from results</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  cl::Context context = *context_p;</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  cl::Program program = *program_p;</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  cl_int err;</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  cl::CommandQueue queue(context, device, CL_QUEUE_PROFILING_ENABLE, &amp;err);</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD KERNEL</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  cl::KernelFunctor&lt;</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    cl::Buffer, cl::Buffer, cl::Buffer, <span class="dt">double</span>, <span class="dt">int</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  &gt; saxpy_kernel = cl::Kernel(program, <span class="st">"saxpy"</span>);</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="co">// create device-side buffers (i.e. allocate device memory)</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  cl::Buffer x_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  cl::Buffer y_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="co">// CREATE CORRESPONDING HOST-SIDE BUFFERS</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *x_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(x_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *y_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(y_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *out_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(out_d, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD DATA INTO HOST-SIDE</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; N; i++) {</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>      x_h[i] = i/<span class="fl">3.0</span>;</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>      y_h[i] = i/<span class="fl">2.0</span>;</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TRANSFER DATA TO DEVICE</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  queue.enqueueMigrateMemObjects({x_d, y_d},<span class="dv">0</span>);</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="co">// QUEUE KERNEL</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  saxpy_kernel(cl::EnqueueArgs(queue, cl::NDRange(<span class="dv">1</span>), cl::NDRange(<span class="dv">1</span>)), x_d, y_d, out_d, a, N);</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="co">// SYNCHRONISE</span></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  queue.finish();</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TRANSFER DATA TO HOST</span></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  queue.enqueueMigrateMemObjects({out_d}, CL_MIGRATE_MEM_OBJECT_HOST);</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="co">// SYNCHRONISE AGAIN</span></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  queue.finish();</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;iostream&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;host_support.h&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;CL/cl2.hpp&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">int</span> N = <span class="dv">1000</span>;</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">double</span> a = <span class="fl">2.0</span>;</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="dt">int</span> BUFFER_SIZE = N*<span class="kw">sizeof</span>(<span class="dt">double</span>);</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">const</span> <span class="bu">std::</span>string XCLBIN_FILE = <span class="st">"saxpy.xclbin"</span>;</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main(<span class="dt">int</span> argc, <span class="at">const</span> <span class="dt">char</span> **argv)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD OPENCL DEVICE + BINARY FILE</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  cl::Context* context_p;</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  cl::Program* program_p;</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>vector&lt;cl::Device&gt; devices;</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="bu">std::</span>tie(program_p, context_p, devices)=initialiseDevice(<span class="st">"Xilinx"</span>, <span class="st">"u280"</span>, XCLBIN_FILE);</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  cl::Device device = devices[<span class="dv">0</span>]; <span class="co">// Choose first device from results</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  cl::Context context = *context_p;</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  cl::Program program = *program_p;</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  cl_int err;</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  cl::CommandQueue queue(context, device, CL_QUEUE_PROFILING_ENABLE, &amp;err);</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD KERNEL</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  cl::KernelFunctor&lt;</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    cl::Buffer, cl::Buffer, cl::Buffer, <span class="dt">double</span>, <span class="dt">int</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  &gt; saxpy_kernel = cl::Kernel(program, <span class="st">"saxpy"</span>);</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="co">// create device-side buffers (i.e. allocate device memory)</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  cl::Buffer x_d(context, CL_MEM_READ_ONLY, BUFFER_SIZE, NULL, &amp;err);</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  cl::Buffer y_d(context, CL_MEM_READ_ONLY, BUFFER_SIZE, NULL, &amp;err);</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, BUFFER_SIZE, NULL, &amp;err);</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  <span class="co">// CREATE CORRESPONDING HOST-SIDE BUFFERS</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *x_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(x_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, BUFFER_SIZE);</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *y_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(y_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, BUFFER_SIZE);</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> *out_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(out_d, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, <span class="dv">0</span>, BUFFER_SIZE);</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="co">// LOAD DATA INTO HOST-SIDE</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; N; i++) {</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>      x_h[i] = i/<span class="fl">3.0</span>;</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      y_h[i] = i/<span class="fl">2.0</span>;</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TRANSFER DATA TO DEVICE</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  queue.enqueueMigrateMemObjects({x_d, y_d},<span class="dv">0</span>);</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="co">// QUEUE KERNEL</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  saxpy_kernel(cl::EnqueueArgs(queue, cl::NDRange(<span class="dv">1</span>), cl::NDRange(<span class="dv">1</span>)), x_d, y_d, out_d, a, N);</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="co">// SYNCHRONISE</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  queue.finish();</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TRANSFER DATA TO HOST</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  queue.enqueueMigrateMemObjects({out_d}, CL_MIGRATE_MEM_OBJECT_HOST);</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="co">// SYNCHRONISE AGAIN</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  queue.finish();</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> kernel_worked = <span class="kw">true</span>;</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; N; i++) {</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(out_h[i] != a*x_h[i] + y_h[i]) {</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>      kernel_worked = <span class="kw">false</span>;</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>      <span class="cf">break</span>;</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (kernel_worked) {</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; <span class="st">"It worked!"</span> &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="bu">std::</span>cout &lt;&lt; <span class="st">"Something went wrong..."</span> &lt;&lt; <span class="bu">std::</span>endl;</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="dv">0</span>;</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>}</span></code></pre>
 </div>
 <p>If you’ve seen OpenCL code before this should be relatively familiar with one exception: for codes targeting CPU and GPU the source code for the kernel is usually loaded and compiled by the runtime (at runtime); here, we compile the kernel separately using Xilinx tools and load the pre-compiled binary (with filetype <code>.xclbin</code>). We have also not provided much error handling for simplicity so please do not use this code in production code!</p>
-<p>If you haven’t seen OpenCL code before, don’t worry, we’ll break this down over the next few sections into the following major pieces:</p>
+<p>If you haven’t seen OpenCL code before, don’t worry, we’ll break this example down over the next few sections into the following major pieces:</p>
 <ul><li>OpenCL initialisation
 <ul><li>How to find valid, connected OpenCL devices?</li>
 <li>What are contexts, programs and queues and how do we set them up?</li>
-<li>How do I compile a kernel?</li>
-<li>How can I load my kernel?</li>
 </ul></li>
 <li>Data transfer and memory management
 <ul><li>What are buffers?</li>
@@ -377,8 +406,59 @@
 <li>How can I transfer data to and from the device?</li>
 </ul></li>
 <li>Kernel launching and synchronisation
-<ul><li>How can I launch kernels?</li>
+<ul><li>How can I load my pre-compiled kernel?</li>
+<li>How can I launch kernels?</li>
 <li>How can I synchronise host and device?</li>
+</ul></li>
+</ul><p>While is might seem like OpenCL requires a lot of boilerplate, it’s all necessary. Much of it only has to happen once in a whole code so while the boilerplate is <em>most</em> of the code in this example, in larger, real codes the boilerplate is a less significant part of the codebase.</p>
+</section><section id="opencl-initialisation"><h2 class="section-heading">OpenCL Initialisation<a class="anchor" aria-label="anchor" href="#opencl-initialisation"></a>
+</h2>
+<hr class="half-width"><p>Let’s breakdown the initialisation step of the minimal saxpy code from the previous section:</p>
+<div class="codewrapper sourceCode" id="cb3">
+<h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// LOAD OPENCL DEVICE + BINARY FILE</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cl::Context* context_p;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>cl::Program* program_p;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>vector&lt;cl::Device&gt; devices;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">std::</span>tie(program_p, context_p, devices)=initialiseDevice(<span class="st">"Xilinx"</span>, <span class="st">"u280"</span>, XCLBIN_FILE);</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>cl::Device device = devices[<span class="dv">0</span>]; <span class="co">// Choose first device from results</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>cl::Context context = *context_p;</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>cl::Program program = *program_p;</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>cl_int err;</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>cl::CommandQueue queue(context, device, CL_QUEUE_PROFILING_ENABLE, &amp;err);</span></code></pre>
+</div>
+</section><section id="contexts-programs-devices-and-queues"><h2 class="section-heading">Contexts, programs, devices and queues<a class="anchor" aria-label="anchor" href="#contexts-programs-devices-and-queues"></a>
+</h2>
+<hr class="half-width"><p>The <strong>context</strong> is an OpenCL structure containing global information about the currently running code, such as which devices are currently being used. For the most part, you can set it up in the initialisation stage and forget about it. The initialisation here is handled by the <code>initialiseDevice</code> function provided by the <code>host_support</code> library.</p>
+<p>A <strong>program</strong> is a collection of kernels and device functions (that are functions that will only be run on the devices). OpenCL codes targeting CPUs and GPUs may compile this program from a provided source during runtime but on FPGAs it is more standard to precompile the kernel and then load the <code>.xclbin</code> file. Here, the loading of the program is again handled by <code>initialiseDevice</code>.</p>
+<p>A <strong>device</strong> is any device capable of running an OpenCL kernel. Each device identifies itself to the OpenCL API via a string containing the vendor and type of device, so here we can use the <code>initialiseDevice</code> function (again) to find and fetch details of all devices with identity string matching that of the “u280” FPGA made by “Xilinx”. Since <code>devices</code> is a vector, we take the first device found. If OpenCL cannot find any device with these identifiers, <code>devices</code> will be empty and the program will crash so, again, please do not use this code in production.</p>
+<p>Finally, a <strong>queue</strong> or <strong>command queue</strong> is OpenCL’s way of organising data transfer requests, kernel launches, event handling, etc, essentially any tasks that could require a specific order. Remember devices are mostly asynchronous with respect to the host so a queue is required to ensure certain tasks happen in the expected order. The host can synchronise a queue, waiting until the queue has finished or waiting for a specific event to be handling (e.g. signalling the end of a particular kernel). There can be multiple queues at any one time, allowing a programmer to, for example, queue both a kernel launch and a data transfer task at the same time to overlap their runtimes. This is advanced use of queues however and we will only be using a single queue in this workshop.</p>
+<div id="discussion1" class="callout discussion">
+<div class="callout-square">
+<i class="callout-icon" data-feather="message-circle"></i>
+</div>
+<div id="documentation-challenge" class="callout-inner">
+<h3 class="callout-title">Documentation Challenge<a class="anchor" aria-label="anchor" href="#discussion1"></a>
+</h3>
+<div class="callout-content">
+<p>The <code>initialiseDevice</code> function takes care of most of the OpenCL boilerplate involving interfacing with the runtime, asking for a list of available devices, finding a matching device, loading the binary file and creating the context and program associated with the device and binary. You can read through the source for the host_support library after the workshop<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> but in this challenge we’d like you to head to the OpenCL C++ documentation (see Resources section at the end of the section) and just find the documentation for:</p>
+<ul><li><code>cl::Context</code></li>
+<li><code>cl::Platform::get(...)</code></li>
+<li><code>cl::CommandQueue</code></li>
+</ul><p>The point of this exercise is just to ensure you can find what you’re looking for in the OpenCL C++ documentation.</p>
+</div>
+</div>
+</div>
+</section><section id="resources"><h2 class="section-heading">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+</h2>
+<hr class="half-width"><ul><li>
+<a href="https://github.khronos.org/OpenCL-CLHPP/" class="external-link">OpenCL C++ Bindings</a>
+<ul><li>This documentation is a little hard to read and sometimes incomplete. It may be that reading the source code of the library is easier.</li>
+</ul></li>
+<li>
+<a href="https://man.opencl.org/" class="external-link">OpenCL 2.1 Reference Pages</a>
+<ul><li>Only documents the C API but can be more informative than the C++ Bindings documentation</li>
 </ul></li>
 </ul><div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
@@ -390,7 +470,11 @@
 <div class="callout-content">
 <ul><li>OpenCL is a framework for managing accelerators</li>
 <li>The OpenCL runtime provides functions for interfacing with accelerators</li>
-<li>OpenCL can involve significant boilerplate</li>
+<li>An OpenCL context is a structure containing global information about the OpenCL state</li>
+<li>A program is a collection of compiled kernels</li>
+<li>A device is a connected device capable of running an OpenCL kernel</li>
+<li>A queue is an ordered list of tasks or events to be run on the device</li>
+<li>Kernels are loaded from programs and can be wrapped in KernelFunctors for ease of calling</li>
 </ul></div>
 </div>
 </div>
@@ -398,15 +482,21 @@
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 
  -->
-</section></div> <!-- / div.lesson-content -->
+</section><div class="footnotes">
+<hr><ol><li id="fn1"><p>It’s a short and easily read library I promise!<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol></div>
+
+
+
+      </div> <!-- / div.lesson-content -->
     </main><!-- / main#main-content.main-content --><nav class="bottom-pagination mx-md-4" aria-label="Previous and Next Chapter"><div class="d-block d-sm-block d-md-none">
-        <a class="chapter-link" href="01-accel-and-opencl.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="03-opencl-initialisation.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="01-accel-and-fpgas.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
+        <a class="chapter-link float-end" href="04-data-transfer-memory-management.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
-        <a class="chapter-link" href="01-accel-and-opencl.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: Introduction to</a>
-        <a class="chapter-link float-end" href="03-opencl-initialisation.html" rel="next">Next: OpenCL... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="01-accel-and-fpgas.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: Introduction to</a>
+        <a class="chapter-link float-end" href="04-data-transfer-memory-management.html" rel="next">Next: Data Transfer and... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
     </nav></div> <!-- / div.primary-content.col-xs-12 -->
 <!-- END:   inst/pkgdown/templates/content-instructor.html-->
@@ -422,7 +512,7 @@ any links that you are not going to use.
         <p>Materials licensed under <a href="LICENSE.html">CC-BY 4.0</a> by the authors</p>
         
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.10.0" class="external-link">sandpaper (0.10.0)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.10.1" class="external-link">sandpaper (0.10.1)</a>,
         <a href="https://github.com/carpentries/pegboard/tree/0.3.2" class="external-link">pegboard (0.3.2)</a>,
       and <a href="https://github.com/carpentries/varnish/tree/0.2.4" class="external-link">varnish (0.2.4)</a>.</p>
 			</div>
@@ -445,8 +535,8 @@ any links that you are not going to use.
   "url": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/02-opencl.html",
   "identifier": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/02-opencl.html",
   "dateCreated": "2022-09-13",
-  "dateModified": "2022-09-20",
-  "datePublished": "2022-09-27"
+  "dateModified": "2022-09-28",
+  "datePublished": "2022-09-28"
 }
 
   </script><script>

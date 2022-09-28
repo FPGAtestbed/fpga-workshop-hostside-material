@@ -85,11 +85,11 @@
   FPGA Testbed Workshop - Hostside
 </div>
 
-<aside class="col-md-12 lesson-progress"><div style="width: 100%" class="percentage">
-    100%
+<aside class="col-md-12 lesson-progress"><div style="width: 50%" class="percentage">
+    50%
   </div>
   <div class="progress incubator">
-    <div class="progress-bar incubator" role="progressbar" style="width: 100%" aria-valuenow="100" aria-label="Lesson Progress" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-bar incubator" role="progressbar" style="width: 50%" aria-valuenow="50" aria-label="Lesson Progress" aria-valuemin="0" aria-valuemax="100">
     </div>
   </div>
 </aside><div class="container">
@@ -144,7 +144,7 @@
 <div class="accordion accordion-flush" id="accordionFlush2">
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading2">
-        <a href="01-accel-and-opencl.html">1. Introduction to Accelerators</a>
+        <a href="01-accel-and-fpgas.html">1. Introduction to Accelerators</a>
     </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
@@ -154,15 +154,6 @@
   <div class="accordion-item">
     <div class="accordion-header" id="flush-heading3">
         <a href="02-opencl.html">2. OpenCL</a>
-    </div><!--/div.accordion-header-->
-        
-  </div><!--/div.accordion-item-->
-</div><!--/div.accordion-flush-->
-
-<div class="accordion accordion-flush" id="accordionFlush4">
-  <div class="accordion-item">
-    <div class="accordion-header" id="flush-heading4">
-        <a href="03-opencl-initialisation.html">3. OpenCL Initialisation</a>
     </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
@@ -186,6 +177,24 @@
 <li><a href="#transferring-data-between-host-and-device">Transferring data between host and device</a></li>
         </ul></div><!--/div.accordion-body-->
     </div><!--/div.accordion-collapse-->
+        
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush5">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading5">
+        <a href="05-kernel-management.html">4. Kernel Management</a>
+    </div><!--/div.accordion-header-->
+        
+  </div><!--/div.accordion-item-->
+</div><!--/div.accordion-flush-->
+
+<div class="accordion accordion-flush" id="accordionFlush6">
+  <div class="accordion-item">
+    <div class="accordion-header" id="flush-heading6">
+        <a href="06-exercise.html">5. Hostside exercise</a>
+    </div><!--/div.accordion-header-->
         
   </div><!--/div.accordion-item-->
 </div><!--/div.accordion-flush-->
@@ -231,18 +240,18 @@
         <!-- START: inst/pkgdown/templates/content-instructor.html -->
   <div class="col-xl-8 col-lg-12 primary-content">
     <nav class="lesson-content mx-md-4" aria-label="Previous and Next Chapter"><!-- content for small screens --><div class="d-block d-sm-block d-md-none">
-        <a class="chapter-link" href="../instructor/03-opencl-initialisation.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="../instructor/index.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="../instructor/02-opencl.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
+        <a class="chapter-link float-end" href="../instructor/05-kernel-management.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
-        <a class="chapter-link" href="../instructor/03-opencl-initialisation.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: OpenCL</a>
-        <a class="chapter-link float-end" href="../instructor/index.html" rel="next">Next... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="../instructor/02-opencl.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: OpenCL</a>
+        <a class="chapter-link float-end" href="../instructor/05-kernel-management.html" rel="next">Next: Kernel Management... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Data Transfer and Memory Management</h1>
-        <p> Last updated on 2022-09-20 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/04-data-transfer-memory-management.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
-        <p>Estimated time <i aria-hidden="true" data-feather="clock"></i> -1 minutes </p>
+        <p> Last updated on 2022-09-28 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/04-data-transfer-memory-management.md" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <p>Estimated time <i aria-hidden="true" data-feather="clock"></i> 10 minutes </p>
         
         <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
@@ -277,30 +286,36 @@
 </div>
 <section id="why-do-we-need-to-transfer-data"><h2 class="section-heading">Why do we need to transfer data?<a class="anchor" aria-label="anchor" href="#why-do-we-need-to-transfer-data"></a>
 </h2>
-<hr class="half-width"><p>Remember, most[^1] OpenCL devices have memory spaces separate from the main memory used by the CPU (aka <strong>host memory</strong>), so for the device to access some piece of data currently on the host, it must be transferred to the <strong>device memory</strong>. Since there are two separate memory spaces, we also need to be able to independently allocate memory in each space.</p>
-<p>[1]: Some accelerators, such as graphics units within CPUs, share memory spaces with the CPU. In those cases main memory can usually be addressed directly from the device. Both Nvidia and AMD GPUs also provide software abstractions of “unified memory” where the device and host appear to access the same memory space and the runtime transfers data automatically but this can lead to inefficient data transfer patterns.</p>
+<hr class="half-width"><p>Remember, most<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> OpenCL devices have memory spaces separate from the main memory used by the CPU (aka <strong>host memory</strong>), so for the device to access some piece of data currently on the host, it must be transferred to the <strong>device memory</strong>. Since there are two separate memory spaces, we also need to be able to independently allocate memory in each space.</p>
 </section><section id="allocating-data-with-buffers"><h2 class="section-heading">Allocating data with buffers<a class="anchor" aria-label="anchor" href="#allocating-data-with-buffers"></a>
 </h2>
 <hr class="half-width"><p>OpenCL allocates space in device memory in abstractions of arrays called <strong>buffers</strong>. Recall our saxpy program:</p>
 <div class="codewrapper sourceCode" id="cb1">
 <h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cl::Buffer x_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cl::Buffer y_d(context, CL_MEM_READ_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cl::Buffer out_d(context, CL_MEM_WRITE_ONLY, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N, NULL, &amp;err);</span></code></pre>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cl::Buffer x_d(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, BUFFER_SIZE, NULL, &amp;err);</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>cl::Buffer y_d(context, CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, BUFFER_SIZE, NULL, &amp;err);</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cl::Buffer out_d(context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR, BUFFER_SIZE, NULL, &amp;err);</span></code></pre>
 </div>
-<p>Here we have create two input buffers <code>x_d</code> and <code>y_d</code> and one output buffer <code>out_d</code>, all of size <span class="math inline">\(N\)</span> doubles. Note we have suffixed each variable with <code>_d</code> to signify that these are <strong>deviceside buffers</strong>. We pass the OpenCL context so it understands which device we wish to access and flags to indicate whether we need to read or write to these memory spaces from the device. OpenCL can allocate hostside memory mapped to each buffer like so:</p>
+<p>Here we have create two input buffers <code>x_d</code> and <code>y_d</code> and one output buffer <code>out_d</code>, all of size <span class="math inline">\(N\)</span> doubles. Note we have suffixed each variable with <code>_d</code> to signify that these are <strong>deviceside buffers</strong>. We pass:</p>
+<ul><li>the OpenCL context so it understands which device we wish to access (important if there are multiple devices being used)</li>
+<li>flags to indicate whether we need to read or write to these memory spaces from the device</li>
+<li>an additional flag to tell OpenCL we want it to allocate associated hostside memory</li>
+<li>the sizes of the allocated memory in bytes</li>
+<li>a NULL pointer instead of a host pointer (used when we have already allocated hostside memory)</li>
+<li>an error code return</li>
+</ul><p>OpenCL can then allocate hostside memory mapped to each device buffer like so:</p>
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *x_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(x_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *y_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(y_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *out_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(out_d, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, <span class="dv">0</span>, <span class="kw">sizeof</span>(<span class="dt">double</span>) * N);</span></code></pre>
+<pre class="sourceCode cpp" tabindex="0"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *x_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(x_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, BUFFER_SIZE);</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *y_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(y_d, CL_TRUE, CL_MAP_WRITE, <span class="dv">0</span>, BUFFER_SIZE);</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> *out_h = (<span class="dt">double</span> *)queue.enqueueMapBuffer(out_d, CL_TRUE, CL_MAP_WRITE | CL_MAP_READ, <span class="dv">0</span>, BUFFER_SIZE);</span></code></pre>
 </div>
-<p>Again notice our use of the <code>_h</code> suffix to signify that these pointer point to hostside data. This is a useful convention when dealing with different memory spaces.</p>
+<p>Again notice our use of the <code>_h</code> suffix to signify that these pointer point to hostside data. This is a useful convention when dealing with different memory spaces. The OpenCL C++ documentation is a little sparse on this particular function so I recommend <a href="https://man.opencl.org/clEnqueueMapBuffer.html" class="external-link">the OpenCL Reference Pages</a> for a better description.</p>
 </section><section id="transferring-data-between-host-and-device"><h2 class="section-heading">Transferring data between host and device<a class="anchor" aria-label="anchor" href="#transferring-data-between-host-and-device"></a>
 </h2>
-<hr class="half-width"><p>Data can be transferred between device and host using a migrate task <code>queue.enqueueMigrateMemObjects</code>:</p>
+<hr class="half-width"><p>Data can be transferred between device and host buffers using a migrate task <code>queue.enqueueMigrateMemObjects</code>:</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">CPP<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -308,20 +323,41 @@
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>...</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>queue.enqueueMigrateMemObjects({out_d}, CL_MIGRATE_MEM_OBJECT_HOST);</span></code></pre>
 </div>
-<p>Because we’ve already done some work in setting up buffers and mapping those to hostside memory, the data transfer calls are relatively simple and less error-prone as a result. It is still possible to transfer data without mapping but more care must be taken in each transfer call.</p>
+<p>Because we’ve already done some work in setting up buffers and mapping those to hostside memory, the data transfer calls are simpler and less error-prone as a result, compared to more manual methods (which we won’t go into here). We also get the added bonus of OpenCL ensuring our hostside memory is <strong>aligned</strong> to 4 KiB pages and <strong>pinned</strong> to physical address locations, both resulting in faster data transfer.</p>
+<p>It is still possible to transfer data without this mapping but it’s slightly more involved and care must be taken to ensure hostside memory is well-aligned and pinned for optimal transfer times. We recommend the <a href="https://github.com/Xilinx/Vitis-Tutorials/blob/2022.1/Hardware_Acceleration/Introduction/01-simple-memory-allocation.md" class="external-link">Vitis Hardware Acceleration tutorials</a> for more details on memory management and data transfer.</p>
+<div id="keypoints1" class="callout keypoints">
+<div class="callout-square">
+<i class="callout-icon" data-feather="key"></i>
+</div>
+<div class="callout-inner">
+<h3 class="callout-title">Keypoints<a class="anchor" aria-label="anchor" href="#keypoints1"></a>
+</h3>
+<div class="callout-content">
+<ul><li>OpenCL uses Buffers to encapsulate deviceside memory spaces</li>
+<li>Buffers can (and should!) be mapped to hostside memory spaces</li>
+<li>Data is transferred between host and device memory with migration tasks</li>
+</ul></div>
+</div>
+</div>
 <!-- 
 Place links that you need to refer to multiple times across pages here. Delete
 any links that you are not going to use. 
  -->
-</section></div> <!-- / div.lesson-content -->
+</section><div class="footnotes">
+<hr><ol><li id="fn1"><p>Some accelerators, such as graphics units within CPUs, share memory spaces with the CPU. In those cases main memory can usually be addressed directly from the device. Both Nvidia and AMD GPUs also provide software abstractions of “unified memory” where the device and host appear to access the same memory space and the runtime transfers data automatically but this can lead to inefficient data transfer patterns.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol></div>
+
+
+
+      </div> <!-- / div.lesson-content -->
     </main><!-- / main#main-content.main-content --><nav class="bottom-pagination mx-md-4" aria-label="Previous and Next Chapter"><div class="d-block d-sm-block d-md-none">
-        <a class="chapter-link" href="../instructor/03-opencl-initialisation.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
-        <a class="chapter-link float-end" href="../instructor/index.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="../instructor/02-opencl.html"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous</a>
+        <a class="chapter-link float-end" href="../instructor/05-kernel-management.html">Next<i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
       <!-- content for large screens -->
       <div class="d-none d-sm-none d-md-block">
-        <a class="chapter-link" href="../instructor/03-opencl-initialisation.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: OpenCL</a>
-        <a class="chapter-link float-end" href="../instructor/index.html" rel="next">Next... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
+        <a class="chapter-link" href="../instructor/02-opencl.html" rel="prev"><i aria-hidden="true" class="small-arrow" data-feather="arrow-left"></i>Previous: OpenCL</a>
+        <a class="chapter-link float-end" href="../instructor/05-kernel-management.html" rel="next">Next: Kernel Management... <i aria-hidden="true" class="small-arrow" data-feather="arrow-right"></i></a>
       </div>
     </nav></div> <!-- / div.primary-content.col-xs-12 -->
 <!-- END:   inst/pkgdown/templates/content-instructor.html-->
@@ -337,7 +373,7 @@ any links that you are not going to use.
         <p>Materials licensed under <a href="../LICENSE.html">CC-BY 4.0</a> by the authors</p>
         
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.10.0" class="external-link">sandpaper (0.10.0)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.10.1" class="external-link">sandpaper (0.10.1)</a>,
         <a href="https://github.com/carpentries/pegboard/tree/0.3.2" class="external-link">pegboard (0.3.2)</a>,
       and <a href="https://github.com/carpentries/varnish/tree/0.2.4" class="external-link">varnish (0.2.4)</a>.</p>
 			</div>
@@ -360,8 +396,8 @@ any links that you are not going to use.
   "url": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/04-data-transfer-memory-management.html",
   "identifier": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/04-data-transfer-memory-management.html",
   "dateCreated": "2022-09-13",
-  "dateModified": "2022-09-20",
-  "datePublished": "2022-09-27"
+  "dateModified": "2022-09-28",
+  "datePublished": "2022-09-28"
 }
 
   </script><script>
