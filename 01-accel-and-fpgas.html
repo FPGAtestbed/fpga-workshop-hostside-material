@@ -250,7 +250,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Introduction to Accelerators</h1>
-        <p> Last updated on 2022-09-28 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/01-accel-and-fpgas.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
+        <p> Last updated on 2022-09-29 | <a href="https://github.com/JamieJQuinn/2022-fpga-workshop-hostside-material/edit/main/episodes/01-accel-and-fpgas.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
         <div class="text-end">
           <button role="button" aria-pressed="false" tabindex="0" id="expand-code" class="pull-right"> Expand All Solutions <i aria-hidden="true" data-feather="plus"></i></button>
         </div>
@@ -283,8 +283,7 @@
 <section id="what-are-accelerators"><h2 class="section-heading">What are accelerators?<a class="anchor" aria-label="anchor" href="#what-are-accelerators"></a>
 </h2>
 <hr class="half-width"><p>Accelerators are <strong>devices</strong> which can be connected to computers (aka <strong>hosts</strong>) and used to perform certain kinds of computation much faster than CPUs. The most common accelerators in HPC systems today are graphical processing units (GPUs) which were originally developed to process large numbers of graphics primitives (e.g. pixels, triangles and lines) for rendering 3D computer graphics. Due to their history, their particular strength is being able to perform a large number of calculations in parallel. State of the art GPUs have over 10,000 processing units, much larger than the typical 100 or so cores found in most HPC-grade CPUs, making them particularly suitable for applications where one operation is applied to many pieces of data, such as many image processing algorithms.</p>
-<p>TODO image of node with accelerator attached</p>
-<p>The key things to note about accelerators generally are:</p>
+<figure><img src="fig/host_device.png" class="figure mx-auto d-block"></figure><p>The key things to note about accelerators generally are:</p>
 <ol style="list-style-type: decimal"><li>They typically have separate memory to main memory</li>
 </ol><ul><li>Data must be transferred to/from device</li>
 <li>Performance can be affected by slow data transfer</li>
@@ -309,13 +308,11 @@ multiply a and x[i] in FPU, store result in register
 add y[i] to previous result in FPU, store result in register
 ... handle loop</code></pre>
 <p>The key computations happening in this algorithm are the multiplication and addition, each which are performed by some piece of circuitry within the FPU. We could think about the entire algorithm in terms of just the circuitry like so:</p>
-<p>TODO diagram of dataflow</p>
-<p>This is exactly what FPGAs are designed to do: <strong>represent algorithms as data flowing through pieces of circuitry</strong>. This is what is meant by implementing an algorithm “in hardware”. Why is this useful? The fetch-decode-execute cycle itself consumes both time and energy so an algorithm described as data flowing through circuitry wastes no time or energy handling instructions; it’s all devoted to the computation actually being carried out. What makes FPGAs particularly useful for general purpose work is that they are able to change the implemented circuit dynamically as required by the programmer.</p>
+<figure><img src="fig/saxpy_dataflow.png" class="figure mx-auto d-block"></figure><p>This is exactly what FPGAs are designed to do: <strong>represent algorithms as data flowing through pieces of circuitry</strong>. This is what is meant by implementing an algorithm “in hardware”. Why is this useful? The fetch-decode-execute cycle itself consumes both time and energy so an algorithm described as data flowing through circuitry wastes no time or energy handling instructions; it’s all devoted to the computation actually being carried out. What makes FPGAs particularly useful for general purpose work is that they are able to change the implemented circuit dynamically as required by the programmer.</p>
 <div class="section level3">
 <h3 id="fpga-structure">FPGA Structure<a class="anchor" aria-label="anchor" href="#fpga-structure"></a></h3>
 <p>The structure of the FPGA roughly looks like:</p>
-<p>TODO create diagram similar to <a href="https://github.com/Xilinx/Vitis-Tutorials/blob/2022.1/Hardware_Acceleration/Introduction/images/basics_alveo_topology.jpg" class="external-link uri">https://github.com/Xilinx/Vitis-Tutorials/blob/2022.1/Hardware_Acceleration/Introduction/images/basics_alveo_topology.jpg</a></p>
-<p>The <strong>fabric</strong> is made up of <strong>configurable logic blocks</strong> which are the basic building blocks of any circuit implemented on the FPGA. Along with these basic blocks, there can be other blocks like pieces of memory, I/O buffers, DSP blocks and other, large-scale components which interface with the external world, like ethernet or PCEi controllers. Most of these extra blocks can be used without input from the FPGA programmer so all we really need to care about for this introductory workshop is having the concept of blocks forming circuits which represent the dataflow of our algorithms.</p>
+<figure><img src="fig/FPGA_structure.png" class="figure mx-auto d-block"></figure><p>The <strong>fabric</strong> is made up of <strong>configurable logic blocks</strong> which are the basic building blocks of any circuit implemented on the FPGA. Along with these basic blocks, there can be other blocks like pieces of memory, I/O buffers, DSP blocks and other, large-scale components which interface with the external world, like ethernet or PCEi controllers. Most of these extra blocks can be used without input from the FPGA programmer so all we really need to care about for this introductory workshop is having the concept of blocks forming circuits which represent the dataflow of our algorithms.</p>
 <p>Blocks that <em>are</em> relevant to our later optimisation session are the local memory blocks: pieces of RAM embedded in the fabric that can hold small amounts of data. These can generally be thought of as caches or even registers and can be accessed much more quickly than the large device memory.</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
@@ -382,8 +379,8 @@ any links that you are not going to use.
   "url": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/01-accel-and-fpgas.html",
   "identifier": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/01-accel-and-fpgas.html",
   "dateCreated": "2022-09-13",
-  "dateModified": "2022-09-28",
-  "datePublished": "2022-09-28"
+  "dateModified": "2022-09-29",
+  "datePublished": "2022-09-29"
 }
 
   </script><script>
