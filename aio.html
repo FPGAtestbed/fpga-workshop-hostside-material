@@ -366,6 +366,7 @@ add y[i] to previous result in FPU, store result in register
 <p>The structure of the FPGA roughly looks like:</p>
 <figure><img src="fig/FPGA_structure.png" class="figure mx-auto d-block"></figure><p>The <strong>fabric</strong> is made up of <strong>configurable logic blocks</strong> which are the basic building blocks of any circuit implemented on the FPGA. Along with these basic blocks, there can be other blocks like pieces of memory, I/O buffers, DSP blocks and other, large-scale components which interface with the external world, like ethernet or PCEi controllers. Most of these extra blocks can be used without input from the FPGA programmer so all we really need to care about for this introductory workshop is having the concept of blocks forming circuits which represent the dataflow of our algorithms.</p>
 <p>Blocks that <em>are</em> relevant to our later optimisation session are the local memory blocks: pieces of RAM embedded in the fabric that can hold small amounts of data. These can generally be thought of as caches or even registers and can be accessed much more quickly than the large device memory.</p>
+<p>This fabric is connected to other major pieces on the device, most relevant to us are the memory banks, here labelled as <strong>high bandwidth memory</strong> (HBM) and the PCIe controller which ultimately connects the whole device to the host.</p>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
 <i class="callout-icon" data-feather="key"></i>
