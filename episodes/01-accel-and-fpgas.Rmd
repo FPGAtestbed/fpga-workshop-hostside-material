@@ -77,6 +77,8 @@ The **fabric** is made up of **configurable logic blocks** which are the basic b
 
 Blocks that *are* relevant to our later optimisation session are the local memory blocks: pieces of RAM embedded in the fabric that can hold small amounts of data. These can generally be thought of as caches or even registers and can be accessed much more quickly than the large device memory.
 
+This fabric is connected to other major pieces on the device, most relevant to us are the memory banks, here labelled as **high bandwidth memory** (HBM) and the PCIe controller which ultimately connects the whole device to the host.
+
 ::::::::::::::::::::::::::::::::::::: keypoints 
 
 - Accelerators are devices used to offload particular kinds of computation
