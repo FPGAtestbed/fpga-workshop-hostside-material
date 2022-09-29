@@ -22,7 +22,7 @@ exercises: 0
 
 Accelerators are **devices** which can be connected to computers (aka **hosts**) and used to perform certain kinds of computation much faster than CPUs. The most common accelerators in HPC systems today are graphical processing units (GPUs) which were originally developed to process large numbers of graphics primitives (e.g. pixels, triangles and lines) for rendering 3D computer graphics. Due to their history, their particular strength is being able to perform a large number of calculations in parallel. State of the art GPUs have over 10,000 processing units, much larger than the typical 100 or so cores found in most HPC-grade CPUs, making them particularly suitable for applications where one operation is applied to many pieces of data, such as many image processing algorithms.
 
-TODO image of node with accelerator attached
+![](fig/host_device.png)
 
 The key things to note about accelerators generally are:
 
@@ -63,7 +63,7 @@ add y[i] to previous result in FPU, store result in register
 
 The key computations happening in this algorithm are the multiplication and addition, each which are performed by some piece of circuitry within the FPU. We could think about the entire algorithm in terms of just the circuitry like so:
 
-TODO diagram of dataflow
+![](fig/saxpy_dataflow.png)
 
 This is exactly what FPGAs are designed to do: **represent algorithms as data flowing through pieces of circuitry**. This is what is meant by implementing an algorithm "in hardware". Why is this useful? The fetch-decode-execute cycle itself consumes both time and energy so an algorithm described as data flowing through circuitry wastes no time or energy handling instructions; it's all devoted to the computation actually being carried out. What makes FPGAs particularly useful for general purpose work is that they are able to change the implemented circuit dynamically as required by the programmer.
 
@@ -71,7 +71,7 @@ This is exactly what FPGAs are designed to do: **represent algorithms as data fl
 
 The structure of the FPGA roughly looks like:
 
-TODO create diagram similar to https://github.com/Xilinx/Vitis-Tutorials/blob/2022.1/Hardware_Acceleration/Introduction/images/basics_alveo_topology.jpg
+![](fig/FPGA_structure.png)
 
 The **fabric** is made up of **configurable logic blocks** which are the basic building blocks of any circuit implemented on the FPGA. Along with these basic blocks, there can be other blocks like pieces of memory, I/O buffers, DSP blocks and other, large-scale components which interface with the external world, like ethernet or PCEi controllers. Most of these extra blocks can be used without input from the FPGA programmer so all we really need to care about for this introductory workshop is having the concept of blocks forming circuits which represent the dataflow of our algorithms.
 
