@@ -593,12 +593,12 @@ any links that you are not going to use.
 <p>A <strong>program</strong> is a collection of kernels and device functions (that are functions that will only be run on the devices). OpenCL codes targeting CPUs and GPUs may compile this program from a provided source during runtime but on FPGAs it is more standard to precompile the kernel and then load the <code>.xclbin</code> file. Here, the loading of the program is again handled by <code>initialiseDevice</code>.</p>
 <p>A <strong>device</strong> is any device capable of running an OpenCL kernel. Each device identifies itself to the OpenCL API via a string containing the vendor and type of device, so here we can use the <code>initialiseDevice</code> function (again) to find and fetch details of all devices with identity string matching that of the “u280” FPGA made by “Xilinx”. Since <code>devices</code> is a vector, we take the first device found. If OpenCL cannot find any device with these identifiers, <code>devices</code> will be empty and the program will crash so, again, please do not use this code in production.</p>
 <p>Finally, a <strong>queue</strong> or <strong>command queue</strong> is OpenCL’s way of organising data transfer requests, kernel launches, event handling, etc, essentially any tasks that could require a specific order. Remember devices are mostly asynchronous with respect to the host so a queue is required to ensure certain tasks happen in the expected order. The host can synchronise a queue, waiting until the queue has finished or waiting for a specific event to be handling (e.g. signalling the end of a particular kernel). There can be multiple queues at any one time, allowing a programmer to, for example, queue both a kernel launch and a data transfer task at the same time to overlap their runtimes. This is advanced use of queues however and we will only be using a single queue in this workshop.</p>
-<div id="discussion1" class="callout discussion">
+<div id="documentation-challenge" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
 <div id="documentation-challenge" class="callout-inner">
-<h3 class="callout-title">Documentation Challenge<a class="anchor" aria-label="anchor" href="#discussion1"></a>
+<h3 class="callout-title">Documentation Challenge<a class="anchor" aria-label="anchor" href="#documentation-challenge"></a>
 </h3>
 <div class="callout-content">
 <p>The <code>initialiseDevice</code> function takes care of most of the OpenCL boilerplate involving interfacing with the runtime, asking for a list of available devices, finding a matching device, loading the binary file and creating the context and program associated with the device and binary. You can read through the source for the host_support library after the workshop<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> but in this challenge we’d like you to head to the OpenCL C++ documentation (see Resources section at the end of the section) and just find the documentation for:</p>
@@ -883,9 +883,9 @@ any links that you are not going to use.
         <p>Materials licensed under <a href="../LICENSE.html">CC-BY 4.0</a> by the authors</p>
         
         <p><a href="https://creativecommons.org/licenses/by-sa/4.0/" class="external-link">Template licensed under CC-BY 4.0</a> by <a href="https://carpentries.org" class="external-link">The Carpentries</a></p>
-        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.11.16" class="external-link">sandpaper (0.11.16)</a>,
+        <p>Built with <a href="https://github.com/carpentries/sandpaper/tree/0.12.2" class="external-link">sandpaper (0.12.2)</a>,
         <a href="https://github.com/carpentries/pegboard" class="external-link">pegboard (0.5.3)</a>,
-      and <a href="https://github.com/carpentries/varnish/tree/0.2.16" class="external-link">varnish (0.2.16)</a>.</p>
+      and <a href="https://github.com/carpentries/varnish/tree/0.2.17" class="external-link">varnish (0.2.17)</a>.</p>
 			</div>
 		</footer>
 </div> <!-- / div.container -->
@@ -907,8 +907,8 @@ any links that you are not going to use.
   "url": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/aio.html",
   "identifier": "https://JamieJQuinn.github.io/2022-fpga-workshop-hostside-material/instructor/aio.html",
   "dateCreated": "2022-09-13",
-  "dateModified": "2023-05-16",
-  "datePublished": "2023-05-16"
+  "dateModified": "2023-05-30",
+  "datePublished": "2023-05-30"
 }
 
   </script><script>
